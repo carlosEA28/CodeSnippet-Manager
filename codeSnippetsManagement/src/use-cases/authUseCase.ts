@@ -1,8 +1,13 @@
-import { SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
+import {
+  ConfirmSignUpCommand,
+  SignUpCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import { CreateUserRequestDto } from "../dto/user/create-user-dto";
 import { AwsConfig } from "../lib/aws/awsConfig";
 import { env } from "../env/env";
 import crypto from "crypto";
+import { string } from "zod";
+import { ConfirmAccountDto } from "../dto/user/confirmAccountDto";
 
 export class AuthUseCase {
   constructor(private awsConfig: AwsConfig) {}
@@ -22,6 +27,26 @@ export class AuthUseCase {
       console.error("Error signing up user:", error);
       throw error;
     }
+  }
+
+  public async confirmAccount({ code, username }: ConfirmAccountDto) {
+    const command = new ConfirmSignUpCommand({
+      ClientId: env.AWS_CLIENT_ID,
+      Username: username,
+      SecretHash: this.calculateSecretHash(username),
+      ConfirmationCode: code,
+    });
+
+    const response = await this.awsConfig.cognitoClient().send(command);
+
+    if (response.$metadata.httpStatusCode === 200) {
+      // mandar o email e usernam do usuario no rabbitmq
+      return {
+        token: response.Session,
+      };
+    }
+
+    throw new Error("Failed to confirm account");
   }
 
   private calculateSecretHash(username: string): string {
