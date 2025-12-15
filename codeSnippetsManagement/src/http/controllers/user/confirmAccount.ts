@@ -8,8 +8,9 @@ export async function confirmAccount(request: Request, response: Response) {
   try {
     const confirmAccount = makeConfirmAccountUseCase();
     const token = await confirmAccount.execute({ code, username });
+
     response.status(200).json({ token });
   } catch (error) {
-    response.status(400).json({ error });
+    response.status(400).send(error.message);
   }
 }
