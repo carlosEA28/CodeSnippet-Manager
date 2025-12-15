@@ -1,6 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import { env } from "../../env/env";
+import { env } from "../../env/env.js";
 import { CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
+import { SESClient } from "@aws-sdk/client-ses";
 
 export class AwsConfig {
   public s3Client(): S3Client {
@@ -23,4 +24,6 @@ export class AwsConfig {
     });
     return client;
   }
+
+  public sesClient(): SESClient {}
 }

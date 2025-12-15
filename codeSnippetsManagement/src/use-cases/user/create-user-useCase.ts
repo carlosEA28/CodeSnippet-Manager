@@ -1,11 +1,11 @@
-import { CreateUserRequestDto } from "../../dto/user/create-user-dto";
-import { env } from "../../env/env";
-import { hashPassword } from "../../helpers/hashPassword";
-import { CreateUserRepository } from "../../repositories/user/create-user-repository";
-import { GetUserByEmail } from "../../repositories/user/get-user-by-email";
-import { GetUserByUsername } from "../../repositories/user/get-user-by-username";
-import { AuthUseCase } from "../authUseCase";
-import { FileStorageUseCase } from "../FileStorageUseCase";
+import { CreateUserRequestDto } from "../../dto/user/create-user-dto.js";
+import { env } from "../../env/env.js";
+import { hashPassword } from "../../helpers/hashPassword.js";
+import { CreateUserRepository } from "../../repositories/user/create-user-repository.js";
+import { GetUserByEmail } from "../../repositories/user/get-user-by-email.js";
+import { GetUserByUsername } from "../../repositories/user/get-user-by-username.js";
+import { AuthUseCase } from "../authUseCase.js";
+import { FileStorageUseCase } from "../FileStorageUseCase.js";
 
 export class CreateUserUseCase {
   constructor(

@@ -1,6 +1,6 @@
-import { AwsConfig } from "../../../lib/aws/awsConfig";
-import { AuthUseCase } from "../../authUseCase";
-import { ConfirmAccountUseCase } from "../../user/confirm-account-useCase";
+import { AwsConfig } from "../../../lib/aws/awsConfig.js";
+import { AuthUseCase } from "../../authUseCase.js";
+import { ConfirmAccountUseCase } from "../../user/confirm-account-useCase.js";
 
 export const makeConfirmAccountUseCase = () => {
   const awsConfig = new AwsConfig();

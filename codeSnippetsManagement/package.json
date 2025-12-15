@@ -15,6 +15,7 @@
     "@aws-sdk/client-cognito-identity": "^3.948.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.948.0",
     "@aws-sdk/client-s3": "^3.948.0",
+    "@aws-sdk/client-ses": "^3.948.0",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.1.0",
     "@types/amqplib": "^0.10.8",

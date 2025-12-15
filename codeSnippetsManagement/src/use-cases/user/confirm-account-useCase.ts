@@ -1,7 +1,5 @@
-import { channels } from "../../broker/channels/index";
-import { user } from "../../broker/channels/user";
-import { ConfirmAccountDto } from "../../dto/user/confirmAccountDto";
-import { AuthUseCase } from "../authUseCase";
+import { ConfirmAccountDto } from "../../dto/user/confirmAccountDto.js";
+import { AuthUseCase } from "../authUseCase.js";
 
 export class ConfirmAccountUseCase {
   constructor(private authUseCase: AuthUseCase) {}
@@ -11,11 +9,6 @@ export class ConfirmAccountUseCase {
     if (!response) {
       throw new Error("Failed to confirm account");
     }
-
-    channels.user.sendToQueue(
-      "user",
-      Buffer.from(JSON.stringify({ email: username })),
-    );
 
     return response.token;
   }

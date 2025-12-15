@@ -1,6 +1,6 @@
-import { CreateUserRequestDtoSchema } from "../../../dto/user/create-user-dto";
+import { CreateUserRequestDtoSchema } from "../../../dto/user/create-user-dto.js";
 import type { Request, Response } from "express";
-import { makeCreateUserUseCase } from "../../../use-cases/factories/user/makeCreateUserUseCase";
+import { makeCreateUserUseCase } from "../../../use-cases/factories/user/makeCreateUserUseCase.js";
 
 export async function createUser(request: Request, response: Response) {
   const avatar = request.file;

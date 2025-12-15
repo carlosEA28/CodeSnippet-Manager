@@ -2,12 +2,12 @@ import {
   ConfirmSignUpCommand,
   SignUpCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { CreateUserRequestDto } from "../dto/user/create-user-dto";
-import { AwsConfig } from "../lib/aws/awsConfig";
-import { env } from "../env/env";
+import { CreateUserRequestDto } from "../dto/user/create-user-dto.js";
+import { AwsConfig } from "../lib/aws/awsConfig.js";
+import { env } from "../env/env.js";
 import crypto from "crypto";
 import { string } from "zod";
-import { ConfirmAccountDto } from "../dto/user/confirmAccountDto";
+import { ConfirmAccountDto } from "../dto/user/confirmAccountDto.js";
 
 export class AuthUseCase {
   constructor(private awsConfig: AwsConfig) {}

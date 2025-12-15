@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { ConfirmAccountDtoSchema } from "../../../dto/user/confirmAccountDto";
-import { makeConfirmAccountUseCase } from "../../../use-cases/factories/user/makeConfirmAccountUseCase";
+import { ConfirmAccountDtoSchema } from "../../../dto/user/confirmAccountDto.js";
+import { makeConfirmAccountUseCase } from "../../../use-cases/factories/user/makeConfirmAccountUseCase.js";
 
 export async function confirmAccount(request: Request, response: Response) {
   const { code, username } = ConfirmAccountDtoSchema.parse(request.body);

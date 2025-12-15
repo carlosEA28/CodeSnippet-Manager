@@ -1,6 +1,6 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { AwsConfig } from "../lib/aws/awsConfig";
-import { env } from "../env/env";
+import { AwsConfig } from "../lib/aws/awsConfig.js";
+import { env } from "../env/env.js";
 
 export class FileStorageUseCase {
   constructor(private awsConfig: AwsConfig) {}
