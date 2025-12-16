@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { jwtVerify, createRemoteJWKSet } from "jose";
+import { env } from "../../env/env.js";
 
-const region = process.env.AWS_REGION!;
-const userPoolId = process.env.COGNITO_USER_POOL_ID!;
+const region = env.AWS_REGION;
+const userPoolId = env.AWS_COGNIT_USER_POOL_ID;
 
 const jwks = createRemoteJWKSet(
   new URL(

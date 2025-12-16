@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const DeleteAccountDto = z.object({
-  userId: z.uuid(),
+  userId: z.string(),
   username: z.string(),
 });
 

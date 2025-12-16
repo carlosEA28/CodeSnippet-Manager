@@ -11,4 +11,4 @@ export const userRoutes = Router();
 userRoutes.post("/api/users", upload.single("avatar"), createUser);
 userRoutes.post("/api/users/confirm", confirmAccount);
 userRoutes.post("/api/users/login", login);
-userRoutes.post("/api/users/delete", authMiddleware, deleteAccount);
+userRoutes.delete("/api/users/delete", authMiddleware, deleteAccount);

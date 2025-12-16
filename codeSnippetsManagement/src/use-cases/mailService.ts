@@ -15,7 +15,7 @@ export class MailService {
         Body: {
           Html: {
             Charset: "UTF-8",
-            Data: props.body, // ← Use props.body em vez de chamar o template aqui
+            Data: props.body,
           },
         },
         Subject: {
