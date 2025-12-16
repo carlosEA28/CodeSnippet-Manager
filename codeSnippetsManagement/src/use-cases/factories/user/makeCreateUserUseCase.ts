@@ -9,7 +9,8 @@ import { CreateUserUseCase } from "../../user/create-user-useCase.js";
 export function makeCreateUserUseCase() {
   const createUserRepository = new CreateUserRepository();
   const awsConfig = new AwsConfig();
-  const signUpCognito = new AuthUseCase(awsConfig);
+  const userUseCase = new GetUserByEmail();
+  const signUpCognito = new AuthUseCase(awsConfig, userUseCase);
   const getUserByEmail = new GetUserByEmail();
   const getUserByUsername = new GetUserByUsername();
   const fileStorage = new FileStorageUseCase(awsConfig);

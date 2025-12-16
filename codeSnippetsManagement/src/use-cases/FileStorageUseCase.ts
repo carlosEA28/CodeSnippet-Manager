@@ -1,4 +1,4 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { AwsConfig } from "../lib/aws/awsConfig.js";
 import { env } from "../env/env.js";
 
@@ -33,5 +33,14 @@ export class FileStorageUseCase {
     await this.awsConfig.s3Client().send(command);
 
     return `https://${env.AWS_BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
+  }
+
+  public async deleteFile(fileName: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: env.AWS_BUCKET_NAME,
+      Key: fileName,
+    });
+
+    await this.awsConfig.s3Client().send(command);
   }
 }
