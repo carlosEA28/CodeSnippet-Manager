@@ -18,6 +18,7 @@ export async function createUser(request: Request, response: Response) {
     });
     response.status(201).send(user);
   } catch (error) {
+    throw error;  
     response.status(400).send({ error });
   }
 }

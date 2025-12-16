@@ -7,15 +7,14 @@ import {
 import { CreateUserRequestDto } from "../dto/user/create-user-dto.js";
 import { AwsConfig } from "../lib/aws/awsConfig.js";
 import { env } from "../env/env.js";
-import crypto, { createHmac } from "crypto";
 import { ConfirmAccountDto } from "../dto/user/confirmAccountDto.js";
-import { GetUserByEmail } from "../repositories/user/get-user-by-email.js";
-import { comparePassword } from "../helpers/comparePassword.js";
+import { UserRepository } from "../repositories/user-repository.js";
+import { createHmac } from "crypto";
 
 export class AuthUseCase {
   constructor(
     private awsConfig: AwsConfig,
-    private getUserByEmail: GetUserByEmail,
+    private userRepository: UserRepository,
   ) {}
 
   public async signUpCognito(createUserRequestDto: CreateUserRequestDto) {
@@ -56,7 +55,7 @@ export class AuthUseCase {
 
   public async login(email: string, password: string) {
     try {
-      const user = await this.getUserByEmail.execute(email);
+      const user = await this.userRepository.getUserByEmail(email);
       if (!user) {
         throw new Error("User not found in database");
       }
