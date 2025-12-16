@@ -30,12 +30,10 @@ export class CreateUserUseCase {
       username + "avatarUrl",
     );
 
-    const hashedPassword = await hashPassword(createUserRequestDto.password);
-
     const response = await this.signUpCognito.signUpCognito({
       email,
       username,
-      password: hashedPassword,
+      password: createUserRequestDto.password,
     });
 
     const userId = response.UserSub;

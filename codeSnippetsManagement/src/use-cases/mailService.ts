@@ -13,11 +13,13 @@ export class MailService {
       },
       Message: {
         Body: {
-          Text: {
-            Data: onboardingTemplate("http://fazernofront.com"),
+          Html: {
+            Charset: "UTF-8",
+            Data: props.body, // ← Use props.body em vez de chamar o template aqui
           },
         },
         Subject: {
+          Charset: "UTF-8",
           Data: props.subject,
         },
       },
@@ -27,9 +29,9 @@ export class MailService {
     try {
       const command = new SendEmailCommand(params);
       await this.awsConfig.sesClient().send(command);
-
       return { message: "Email sent successfully" };
     } catch (error) {
+      console.error("Error sending email:", error);
       throw error;
     }
   }

@@ -8,17 +8,13 @@ export class LoginUseCases {
     private authUseCase: AuthUseCase,
   ) {}
 
+  // LoginUseCases
   async execute(email: string, password: string) {
     const user = await this.getUserByEmail.execute(email);
-
     if (!user) {
-      return null;
+      throw new Error("Incorrect username or password.");
     }
-
     const token = await this.authUseCase.login(email, password);
-
-    return {
-      token,
-    };
+    return { token: token.token };
   }
 }
