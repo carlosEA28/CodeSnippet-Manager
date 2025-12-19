@@ -32,20 +32,19 @@ model Snippet {
   description  String?
   code         String   @db.Text
   language     String
-  tags         String[]
   isPublic     Boolean  @default(false)
   collectionId String?
   likes        Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id])
   collection Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
-  likesList  Like[]
 
-  @@index([userId])
-  @@index([collectionId])
+  snippetTags SnippetTag[]   // mudou
+  likesList   Like[]
 }
+
 
 model Collection {
   id             String   @id @default(uuid())
@@ -60,14 +59,20 @@ model Collection {
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   snippets Snippet[]
 
+
+
   @@index([userId])
 }
 
 model Tag {
-  id           String   @id @default(uuid())
-  name         String   @unique
-  createdAt    DateTime @default(now())
+  id        String   @id @default(uuid())
+  name      String   @unique
+  category  String
+  createdAt DateTime @default(now())
+
+  snippetTags SnippetTag[]
 }
+
 
 model Like {
   id        String   @id @default(uuid())
@@ -80,4 +85,17 @@ model Like {
 
   @@unique([userId, snippetId])
   @@index([snippetId])
+}
+model SnippetTag {
+  id        String   @id @default(uuid())
+  snippetId String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  snippet Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([snippetId, tagId]) // prevenimos duplicação
+  @@index([snippetId])
+  @@index([tagId])
 }
