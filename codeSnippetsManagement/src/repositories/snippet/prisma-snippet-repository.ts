@@ -4,6 +4,69 @@ import { prisma } from "../../lib/prisma.js";
 import { SnippetRepository } from "../snippet-repository.js";
 
 export class PrismaSnippetRepository implements SnippetRepository {
+  async deleteSnippet(id: string): Promise<void> {
+    await prisma.snippet.delete({
+      where: {
+        id,
+      },
+    });
+  }
+  findAllSnippets(): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllPublicSnippets(): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllSnippetsByTag(tagId: string): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllSnippetsByLanguage(language: string): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  async findSnippetById(id: string): Promise<Snippet | null> {
+    const snippet = await prisma.snippet.findUnique({
+      where: {
+        id,
+      },
+    });
+    return snippet;
+  }
+  findRecentSnippets(): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllUserSnippets(userId: string): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllPublicUserSnippets(userId: string): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllPrivateUserSnippets(userId: string): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllPublicUserSnippetsByName(
+    userId: string,
+    name: string,
+  ): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllPrivateUserSnippetsByName(
+    userId: string,
+    name: string,
+  ): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllUserPublicSnippetsByTag(
+    userId: string,
+    tagId: string,
+  ): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
+  findAllUserPrivateSnippetsByTag(
+    userId: string,
+    tagId: string,
+  ): Promise<Snippet[]> {
+    throw new Error("Method not implemented.");
+  }
   async findSnippetByTitle(title: string): Promise<Snippet | null> {
     const snippet = await prisma.snippet.findFirst({
       where: {
