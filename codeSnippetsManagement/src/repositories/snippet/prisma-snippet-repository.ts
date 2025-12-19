@@ -4,16 +4,6 @@ import { prisma } from "../../lib/prisma.js";
 import { SnippetRepository } from "../snippet-repository.js";
 
 export class PrismaSnippetRepository implements SnippetRepository {
-  async findTagsByIds(ids: string[]): Promise<Tag[]> {
-    const tags = await prisma.tag.findMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
-    });
-    return tags;
-  }
   async findSnippetByTitle(title: string): Promise<Snippet | null> {
     const snippet = await prisma.snippet.findFirst({
       where: {
