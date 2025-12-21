@@ -1,7 +1,7 @@
-import { CreateSnippetRequestDto } from "../../dto/snippet/CreateSnippetRequestDto.js";
-import { Prisma, Snippet, Tag } from "../../generated/prisma/index.js";
-import { prisma } from "../../lib/prisma.js";
-import { SnippetRepository } from "../snippet-repository.js";
+import {CreateSnippetRequestDto} from "../../dto/snippet/CreateSnippetRequestDto.js";
+import {Snippet} from "../../generated/prisma/index.js";
+import {prisma} from "../../lib/prisma.js";
+import {SnippetRepository} from "../snippet-repository.js";
 
 export class PrismaSnippetRepository implements SnippetRepository {
   async deleteSnippet(id: string): Promise<void> {
@@ -11,8 +11,9 @@ export class PrismaSnippetRepository implements SnippetRepository {
       },
     });
   }
-  findAllSnippets(): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+
+  async findAllSnippets(): Promise<Snippet[]> {
+    return prisma.snippet.findMany();
   }
   findAllPublicSnippets(): Promise<Snippet[]> {
     throw new Error("Method not implemented.");
@@ -31,24 +32,34 @@ export class PrismaSnippetRepository implements SnippetRepository {
     });
     return snippet;
   }
+
   findRecentSnippets(): Promise<Snippet[]> {
     throw new Error("Method not implemented.");
   }
+
   findAllUserSnippets(userId: string): Promise<Snippet[]> {
     throw new Error("Method not implemented.");
   }
-  findAllPublicUserSnippets(userId: string): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+  async findAllPublicUserSnippets(userId: string): Promise<Snippet[]> {
+    const snippets = await prisma.snippet.findMany({
+      where: {
+        userId,
+        isPublic: true,
+      },
+    });
+    return snippets;
   }
   findAllPrivateUserSnippets(userId: string): Promise<Snippet[]> {
     throw new Error("Method not implemented.");
   }
+
   findAllPublicUserSnippetsByName(
     userId: string,
     name: string,
   ): Promise<Snippet[]> {
     throw new Error("Method not implemented.");
   }
+
   findAllPrivateUserSnippetsByName(
     userId: string,
     name: string,
