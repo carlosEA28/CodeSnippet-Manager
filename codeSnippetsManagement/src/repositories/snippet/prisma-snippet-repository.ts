@@ -15,12 +15,17 @@ export class PrismaSnippetRepository implements SnippetRepository {
   async findAllSnippets(): Promise<Snippet[]> {
     return prisma.snippet.findMany();
   }
-  findAllPublicSnippets(): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+  async findAllPublicSnippets(): Promise<Snippet[]> {
+    return await prisma.snippet.findMany({
+      where: {
+        isPublic: true,
+      }
+    });
   }
   findAllSnippetsByTag(tagId: string): Promise<Snippet[]> {
     throw new Error("Method not implemented.");
   }
+
   findAllSnippetsByLanguage(language: string): Promise<Snippet[]> {
     throw new Error("Method not implemented.");
   }
