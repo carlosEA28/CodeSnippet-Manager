@@ -83,13 +83,16 @@ export class PrismaSnippetRepository implements SnippetRepository {
   ): Promise<Snippet[]> {
     throw new Error("Method not implemented.");
   }
+
   async findSnippetByTitle(title: string): Promise<Snippet | null> {
-    const snippet = await prisma.snippet.findFirst({
+    return prisma.snippet.findMany({
       where: {
-        title,
+        title: {
+          contains: title,
+          mode: 'insensitive'
+        },
       },
     });
-    return snippet;
   }
   async createSnippet(
     params: CreateSnippetRequestDto,
