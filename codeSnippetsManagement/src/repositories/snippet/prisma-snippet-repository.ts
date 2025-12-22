@@ -15,6 +15,7 @@ export class PrismaSnippetRepository implements SnippetRepository {
   async findAllSnippets(): Promise<Snippet[]> {
     return prisma.snippet.findMany();
   }
+
   async findAllPublicSnippets(): Promise<Snippet[]> {
     return await prisma.snippet.findMany({
       where: {
@@ -22,12 +23,47 @@ export class PrismaSnippetRepository implements SnippetRepository {
       }
     });
   }
-  findAllSnippetsByTag(tagId: string): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+
+  async findAllSnippetsByTag(tagName: string): Promise<Snippet[]> {
+    return await prisma.snippet.findMany({
+      where: {
+        snippetTags: { // MUDOU AQUI
+          some: {
+            tag: {
+              name: {
+                equals: tagName,
+                mode: 'insensitive'
+              }
+            }
+          }
+        },
+        isPublic: true
+      },
+      include: {
+        snippetTags: { // MUDOU AQUI
+          include: {
+            tag: true
+          }
+        }
+      }
+    });
   }
 
-  findAllSnippetsByLanguage(language: string): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+  async findAllSnippetsByLanguage(language: string): Promise<Snippet[]> {
+    console.log('Buscando por language:', language);
+    console.log('Tipo:', typeof language);
+    console.log('Length:', language.length);
+    console.log('Caracteres:', [...language].map(c => c.charCodeAt(0)));
+
+    return await prisma.snippet.findMany({
+      where: {
+        language: {
+          contains: language,
+          mode: 'insensitive'
+        },
+        isPublic: true
+      },
+    });
   }
   async findSnippetById(id: string): Promise<Snippet | null> {
     const snippet = await prisma.snippet.findUnique({
@@ -38,54 +74,110 @@ export class PrismaSnippetRepository implements SnippetRepository {
     return snippet;
   }
 
-  findRecentSnippets(): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+  async findRecentSnippets(): Promise<Snippet[]> {
+    return await prisma.snippet.findMany({
+      where:{
+        isPublic: true
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 10,
+    });
   }
 
-  findAllUserSnippets(userId: string): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+  async findAllUserSnippets(userId: string): Promise<Snippet[]> {
+    return await prisma.snippet.findMany({
+      where: {
+        userId,
+      },
+    });
   }
   async findAllPublicUserSnippets(userId: string): Promise<Snippet[]> {
-    const snippets = await prisma.snippet.findMany({
+    return await prisma.snippet.findMany({
       where: {
         userId,
         isPublic: true,
       },
     });
-    return snippets;
-  }
-  findAllPrivateUserSnippets(userId: string): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
   }
 
-  findAllPublicUserSnippetsByName(
+
+  async findAllPrivateUserSnippets(userId: string): Promise<Snippet[]> {
+    return await prisma.snippet.findMany({
+      where: {
+        userId,
+        isPublic: false,
+      },
+    });
+  }
+
+  async findAllPublicUserSnippetsByName(
     userId: string,
     name: string,
   ): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+    return await prisma.snippet.findMany({
+      where: {
+        userId,
+        isPublic: true,
+        title: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+    });
   }
 
-  findAllPrivateUserSnippetsByName(
+  async findAllPrivateUserSnippetsByName(
     userId: string,
     name: string,
   ): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+    return await prisma.snippet.findMany({
+      where: {
+        userId,
+        isPublic: false,
+        title: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+    });
   }
-  findAllUserPublicSnippetsByTag(
+  async findAllUserPublicSnippetsByTag(
     userId: string,
     tagId: string,
   ): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+    return await prisma.snippet.findMany({
+      where: {
+        userId,
+        isPublic: true,
+        snippetTags: {
+          some: {
+            tagId,
+          },
+        },
+      },
+    });
   }
-  findAllUserPrivateSnippetsByTag(
+  async findAllUserPrivateSnippetsByTag(
     userId: string,
     tagId: string,
   ): Promise<Snippet[]> {
-    throw new Error("Method not implemented.");
+    return await prisma.snippet.findMany({
+      where: {
+        userId,
+        isPublic: false,
+        snippetTags: {
+          some: {
+            tagId,
+          },
+        },
+      },
+    });
   }
 
   async findSnippetByTitle(title: string): Promise<Snippet | null> {
-    return prisma.snippet.findMany({
+    return await prisma.snippet.findMany({
       where: {
         title: {
           contains: title,
@@ -94,6 +186,7 @@ export class PrismaSnippetRepository implements SnippetRepository {
       },
     });
   }
+
   async createSnippet(
     params: CreateSnippetRequestDto,
   ): Promise<Snippet | null> {
