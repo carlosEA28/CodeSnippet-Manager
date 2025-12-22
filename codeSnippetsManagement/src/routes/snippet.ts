@@ -12,7 +12,7 @@ import {getAllPublicSnippetsByLanguage} from "../http/controllers/snippet/get-al
 
 export const snippetRoutes = Router();
 
-// ✅ ORDEM CORRETA - Rotas específicas ANTES das genéricas
+
 
 // 1. Rotas com paths fixos (mais específicas)
 snippetRoutes.get("/api/snippets/search", authMiddleware, getAllPublicSnippetsByTitle);
