@@ -16,6 +16,10 @@ export interface SnippetRepository {
   findAllUserSnippets(userId: string): Promise<Snippet[]>;
   findAllPublicUserSnippets(userId: string): Promise<Snippet[]>;
   findAllPrivateUserSnippets(userId: string): Promise<Snippet[]>;
+  findAllPublicUserSnippetsByTitle(
+    userId: string,
+    title: string,
+  ): Promise<Snippet[]>;
   findAllPublicUserSnippetsByName(
     userId: string,
     name: string,
@@ -24,7 +28,11 @@ export interface SnippetRepository {
     userId: string,
     name: string,
   ): Promise<Snippet[]>;
-  findAllUserPublicSnippetsByTag(
+  findAllPublicUserSnippetsByLanguage(
+    userId: string,
+    language: string,
+  ): Promise<Snippet[]>;
+  findAllPublicUserSnippetsByTag(
     userId: string,
     tagId: string,
   ): Promise<Snippet[]>;

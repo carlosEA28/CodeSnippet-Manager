@@ -1,9 +1,55 @@
-import {CreateSnippetRequestDto} from "../../dto/snippet/CreateSnippetRequestDto.js";
-import {Snippet} from "../../generated/prisma/index.js";
-import {prisma} from "../../lib/prisma.js";
-import {SnippetRepository} from "../snippet-repository.js";
+import { CreateSnippetRequestDto } from "../../dto/snippet/CreateSnippetRequestDto.js";
+import { Snippet } from "../../generated/prisma/index.js";
+import { prisma } from "../../lib/prisma.js";
+import { SnippetRepository } from "../snippet-repository.js";
 
 export class PrismaSnippetRepository implements SnippetRepository {
+  async findAllPublicUserSnippetsByTitle(
+    userId: string,
+    title: string,
+  ): Promise<Snippet[]> {
+    const snippets = await prisma.snippet.findMany({
+      where: {
+        userId,
+        title: {
+          contains: title,
+          mode: "insensitive",
+        },
+        isPublic: true,
+      },
+    });
+    return snippets;
+  }
+  async findAllPublicUserSnippetsByLanguage(
+    userId: string,
+    language: string,
+  ): Promise<Snippet[]> {
+    const snippets = await prisma.snippet.findMany({
+      where: {
+        userId,
+        language,
+        isPublic: true,
+      },
+    });
+    return snippets;
+  }
+  async findAllPublicUserSnippetsByTag(
+    userId: string,
+    tagId: string,
+  ): Promise<Snippet[]> {
+    const snippets = await prisma.snippet.findMany({
+      where: {
+        userId,
+        snippetTags: {
+          some: {
+            tagId,
+          },
+        },
+        isPublic: true,
+      },
+    });
+    return snippets;
+  }
   async deleteSnippet(id: string): Promise<void> {
     await prisma.snippet.delete({
       where: {
@@ -20,48 +66,53 @@ export class PrismaSnippetRepository implements SnippetRepository {
     return await prisma.snippet.findMany({
       where: {
         isPublic: true,
-      }
+      },
     });
   }
 
   async findAllSnippetsByTag(tagName: string): Promise<Snippet[]> {
     return await prisma.snippet.findMany({
       where: {
-        snippetTags: { // MUDOU AQUI
+        snippetTags: {
+          // MUDOU AQUI
           some: {
             tag: {
               name: {
                 equals: tagName,
-                mode: 'insensitive'
-              }
-            }
-          }
+                mode: "insensitive",
+              },
+            },
+          },
         },
-        isPublic: true
+        isPublic: true,
       },
       include: {
-        snippetTags: { // MUDOU AQUI
+        snippetTags: {
+          // MUDOU AQUI
           include: {
-            tag: true
-          }
-        }
-      }
+            tag: true,
+          },
+        },
+      },
     });
   }
 
   async findAllSnippetsByLanguage(language: string): Promise<Snippet[]> {
-    console.log('Buscando por language:', language);
-    console.log('Tipo:', typeof language);
-    console.log('Length:', language.length);
-    console.log('Caracteres:', [...language].map(c => c.charCodeAt(0)));
+    console.log("Buscando por language:", language);
+    console.log("Tipo:", typeof language);
+    console.log("Length:", language.length);
+    console.log(
+      "Caracteres:",
+      [...language].map((c) => c.charCodeAt(0)),
+    );
 
     return await prisma.snippet.findMany({
       where: {
         language: {
           contains: language,
-          mode: 'insensitive'
+          mode: "insensitive",
         },
-        isPublic: true
+        isPublic: true,
       },
     });
   }
@@ -76,11 +127,11 @@ export class PrismaSnippetRepository implements SnippetRepository {
 
   async findRecentSnippets(): Promise<Snippet[]> {
     return await prisma.snippet.findMany({
-      where:{
-        isPublic: true
+      where: {
+        isPublic: true,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
       take: 10,
     });
@@ -102,7 +153,6 @@ export class PrismaSnippetRepository implements SnippetRepository {
     });
   }
 
-
   async findAllPrivateUserSnippets(userId: string): Promise<Snippet[]> {
     return await prisma.snippet.findMany({
       where: {
@@ -122,7 +172,7 @@ export class PrismaSnippetRepository implements SnippetRepository {
         isPublic: true,
         title: {
           contains: name,
-          mode: 'insensitive',
+          mode: "insensitive",
         },
       },
     });
@@ -138,7 +188,7 @@ export class PrismaSnippetRepository implements SnippetRepository {
         isPublic: false,
         title: {
           contains: name,
-          mode: 'insensitive',
+          mode: "insensitive",
         },
       },
     });
@@ -181,7 +231,7 @@ export class PrismaSnippetRepository implements SnippetRepository {
       where: {
         title: {
           contains: title,
-          mode: 'insensitive'
+          mode: "insensitive",
         },
       },
     });
