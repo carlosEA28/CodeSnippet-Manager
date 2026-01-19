@@ -1,13 +1,20 @@
 package main
 
 import (
+	"auth-service/internal/infrastructure/aws/cognito"
+	"auth-service/internal/repository"
+	"auth-service/internal/service"
 	"auth-service/internal/web/server"
+	"context"
 	"database/sql"
 	"fmt"
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 	"log"
 	"os"
+
+	"github.com/aws/aws-sdk-go-v2/config"
+	cognitoSdk "github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 func getEnv(key, defaultValue string) string {
@@ -41,9 +48,25 @@ func main() {
 	//fecha a conexao com o banco de dados
 	defer db.Close()
 
+	//inicia camadas user
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+
+	// inicia Cognito
+	ctx := context.Background()
+	awsCfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(getEnv("AWS_REGION", "sa-east-1")),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cognitoClient := cognitoSdk.NewFromConfig(awsCfg)
+	cognitoService := cognito.NewCognitoAction(cognitoClient)
+
 	// Configura e inicia o servidor HTTP
 	port := getEnv("HTTP_PORT", "8080")
-	srv := server.NewServer(port)
+	srv := server.NewServer(userService, cognitoService, port)
+	srv.ConfigRoutes()
 
 	if err := srv.Start(); err != nil {
 		log.Fatal("Error starting server: ", err)
