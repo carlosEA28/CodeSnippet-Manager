@@ -2,6 +2,9 @@ package cognito
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"log"
 	"os"
@@ -25,12 +28,22 @@ func NewCognitoAction(c *cognitoidentityprovider.Client) *CognitoService {
 	}
 }
 
-func (a *CognitoService) SignUp(ctx context.Context, password, email string) (SignUpResponse, error) {
+func (a *CognitoService) SignUp(
+	ctx context.Context,
+	password, email string,
+) (SignUpResponse, error) {
+
+	secretHash := generateSecretHash(
+		email,
+		os.Getenv("COGNITO_CLIENT_ID"),
+		os.Getenv("COGNITO_CLIENT_SECRET"),
+	)
 
 	output, err := a.CognitoClient.SignUp(ctx, &cognitoidentityprovider.SignUpInput{
-		ClientId: aws.String(os.Getenv("COGNITO_CLIENT_ID")),
-		Password: aws.String(password),
-		Username: aws.String(email),
+		ClientId:   aws.String(os.Getenv("COGNITO_CLIENT_ID")),
+		SecretHash: aws.String(secretHash),
+		Username:   aws.String(email),
+		Password:   aws.String(password),
 		UserAttributes: []types.AttributeType{
 			{Name: aws.String("email"), Value: aws.String(email)},
 		},
@@ -43,10 +56,11 @@ func (a *CognitoService) SignUp(ctx context.Context, password, email string) (Si
 		} else {
 			log.Printf("Couldn't sign up user %v. Here's why: %v\n", email, err)
 		}
+		return SignUpResponse{}, err
 	}
 
 	return SignUpResponse{
-		CognitoId: *output.UserSub,
+		CognitoId: aws.ToString(output.UserSub),
 	}, nil
 }
 
@@ -71,4 +85,10 @@ func (a *CognitoService) SignIn(ctx context.Context, clientId string, userName s
 
 	}
 	return authResult, err
+}
+
+func generateSecretHash(username, clientID, clientSecret string) string {
+	h := hmac.New(sha256.New, []byte(clientSecret))
+	h.Write([]byte(username + clientID))
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
