@@ -6,6 +6,7 @@ import (
 	"auth-service/internal/infrastructure/aws/cognito"
 	"auth-service/internal/infrastructure/aws/s3"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 )
@@ -73,6 +74,34 @@ func (s *UserService) CreateUser(
 	return &output, nil
 }
 
+func (s *UserService) LoginUser(input dto.LoginUserDto) (map[string]string, error) {
+
+	ctx := context.Background()
+
+	existsingUser, err := s.userRepo.FindByEmail(input.Email)
+	if existsingUser == nil || err != nil {
+		return map[string]string{}, domain.ErrUserNotFound
+	}
+
+	authResult, err := s.cognitoService.SignIn(ctx, os.Getenv("COGNITO_CLIENT_ID"), input.Email, input.Password)
+
+	if err != nil {
+		return map[string]string{}, domain.ErrInvalidCredentials
+	}
+
+	if authResult.AccessToken == nil ||
+		authResult.RefreshToken == nil {
+		return nil, errors.New("invalid auth result from Cognito")
+	}
+
+	return map[string]string{
+		"accessToken":  *authResult.AccessToken,
+		"refreshToken": *authResult.RefreshToken,
+	}, nil
+
+}
+
+// privados
 func (s *UserService) generateProfilePictureUploadURL(
 	ctx context.Context,
 	cognitoId string,

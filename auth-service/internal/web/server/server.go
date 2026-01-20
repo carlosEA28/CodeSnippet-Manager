@@ -36,6 +36,7 @@ func (s *Server) ConfigRoutes() {
 	s.router.Group(func(r chi.Router) {
 		s.router.Route("/users", func(r chi.Router) {
 			r.Post("/", userHandler.CreateUser)
+			r.Post("/login", userHandler.LoginUser)
 		})
 	})
 }

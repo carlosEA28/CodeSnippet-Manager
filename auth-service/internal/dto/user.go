@@ -14,6 +14,11 @@ type CreateUserDto struct {
 	Bio            string `json:"bio"`
 }
 
+type LoginUserDto struct {
+	Email    string
+	Password string
+}
+
 type UserResponseDto struct {
 	ID             string    `json:"id"`
 	CognitoId      string    `json:"cognitoId" validate:"required"`

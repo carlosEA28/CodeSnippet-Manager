@@ -67,10 +67,16 @@ func (a *CognitoService) SignUp(
 func (a *CognitoService) SignIn(ctx context.Context, clientId string, userName string, password string) (*types.AuthenticationResultType, error) {
 	var authResult *types.AuthenticationResultType
 
+	secretHash := generateSecretHash(
+		userName,
+		os.Getenv("COGNITO_CLIENT_ID"),
+		os.Getenv("COGNITO_CLIENT_SECRET"),
+	)
+
 	output, err := a.CognitoClient.InitiateAuth(ctx, &cognitoidentityprovider.InitiateAuthInput{
 		AuthFlow:       "USER_PASSWORD_AUTH",
 		ClientId:       aws.String(clientId),
-		AuthParameters: map[string]string{"USERNAME": userName, "PASSWORD": password},
+		AuthParameters: map[string]string{"USERNAME": userName, "PASSWORD": password, "SECRET_HASH": secretHash},
 	})
 
 	if err != nil {
