@@ -70,7 +70,7 @@ func main() {
 	s3Service := s3ServiceImport.NewS3Service(s3Client)
 
 	//conecta com o rabbit
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(os.Getenv("RABBITMQ_URL"))
 
 	//publisher
 	publisherService, _ := messaging.NewPublisher(conn)
