@@ -3,6 +3,7 @@ package main
 import (
 	"auth-service/internal/infrastructure/aws/cognito"
 	s3ServiceImport "auth-service/internal/infrastructure/aws/s3"
+	"auth-service/internal/infrastructure/messaging"
 	"auth-service/internal/repository"
 	"auth-service/internal/service"
 	"auth-service/internal/web/server"
@@ -17,6 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 func getEnv(key, defaultValue string) string {
@@ -67,9 +69,16 @@ func main() {
 	cognitoService := cognito.NewCognitoAction(cognitoClient)
 	s3Service := s3ServiceImport.NewS3Service(s3Client)
 
+	//conecta com o rabbit
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+
+	//publisher
+	publisherService, _ := messaging.NewPublisher(conn)
+	defer conn.Close()
+
 	//inicia camadas user
 	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository, cognitoService, s3Service)
+	userService := service.NewUserService(userRepository, cognitoService, publisherService, s3Service)
 
 	// Configura e inicia o servidor HTTP
 	port := getEnv("HTTP_PORT", "8080")

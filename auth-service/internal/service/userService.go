@@ -2,29 +2,35 @@ package service
 
 import (
 	"auth-service/internal/domain"
+	"auth-service/internal/domain/events"
 	"auth-service/internal/dto"
 	"auth-service/internal/infrastructure/aws/cognito"
 	"auth-service/internal/infrastructure/aws/s3"
+	"auth-service/internal/infrastructure/messaging"
 	"context"
 	"errors"
 	"fmt"
 	"os"
+	"time"
 )
 
 type UserService struct {
 	userRepo       domain.UserRepository
 	cognitoService *cognito.CognitoService
+	publisher      *messaging.RabbitMQPublisher
 	s3Service      *s3.S3Service
 }
 
 func NewUserService(
 	repository domain.UserRepository,
 	cognitoService *cognito.CognitoService,
+	publisher *messaging.RabbitMQPublisher,
 	s3Service *s3.S3Service,
 ) *UserService {
 	return &UserService{
 		userRepo:       repository,
 		cognitoService: cognitoService,
+		publisher:      publisher,
 		s3Service:      s3Service,
 	}
 }
@@ -93,6 +99,15 @@ func (s *UserService) LoginUser(input dto.LoginUserDto) (map[string]string, erro
 		authResult.RefreshToken == nil {
 		return nil, errors.New("invalid auth result from Cognito")
 	}
+
+	event := events.UserCreatedEvent{
+		UserID:     existsingUser.ID,
+		Email:      existsingUser.Email,
+		CognitoID:  existsingUser.CognitoId,
+		OccurredAt: time.Now(),
+	}
+
+	_ = s.publisher.PublishUserCreated(ctx, event)
 
 	return map[string]string{
 		"accessToken":  *authResult.AccessToken,
