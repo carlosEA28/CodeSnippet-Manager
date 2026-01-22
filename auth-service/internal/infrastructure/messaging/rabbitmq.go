@@ -47,7 +47,7 @@ func NewPublisher(conn *amqp.Connection) (*RabbitMQPublisher, error) {
 
 	err = channel.QueueBind(
 		queue.Name,
-		"user.created", // routing key
+		"user.created.queue", // routing key
 		"user.exchange",
 		false,
 		nil,
@@ -73,7 +73,7 @@ func (r *RabbitMQPublisher) PublishUserCreated(ctx context.Context, event events
 	body, _ := json.Marshal(event)
 
 	return r.channel.Publish(
-		"user.exchange", "user.created", false, false, amqp.Publishing{
+		"user.exchange", "user.created.queue", false, false, amqp.Publishing{
 			ContentType: "application/json",
 			Body:        body,
 		})
