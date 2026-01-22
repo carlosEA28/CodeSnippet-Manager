@@ -17,21 +17,9 @@ async function start() {
 
         const event = JSON.parse(message.content.toString());
 
-        // await sesService.verifyEmail(event.email);
-       console.log(event.email)
         await sendWelcomeEmail(event.Email);
-
     })
 
-    // console.log(oi.consumerTag.toString());
-
-
-    console.log("ENV CHECK", {
-        AWS_REGION: process.env.AWS_REGION,
-        AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY,
-        AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_KEY,
-        SES_FROM_EMAIL: process.env.SES_FROM_EMAIL,
-    })
 
 
     app.listen(process.env.HTTP_PORT, () => {
